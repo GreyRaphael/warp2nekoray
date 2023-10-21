@@ -1,0 +1,23 @@
+{
+    "bean": {
+        "_v": 0,
+        "addr": "127.0.0.1",
+        "cmd": [
+            ""
+        ],
+        "core": "internal",
+        "cs": "{\"local_address\": [\"172.16.0.2/32\", \"2606:4700:110:8f39:2f8f:75dc:cc12:51ff/128\"], \"peer_public_key\": \"bmXOC+F1FxEMF9dyiK2H5/1SUtzH0JuVo51h2wPfgyo=\", \"private_key\": \"wFtQMAaBDUxfDrMISQPYLxKvwEYHvPpaq5ftlxNTTkc=\", \"server\": \"162.159.195.146\", \"server_port\": 968, \"type\": \"wireguard\"}",
+        "mapping_port": 0,
+        "name": "key01",
+        "port": 1080,
+        "socks_port": 0
+    },
+    "gid": 1,
+    "id": 0,
+    "traffic": {
+        "dl": 0,
+        "ul": 0
+    },
+    "type": "custom",
+    "yc": 0
+}
