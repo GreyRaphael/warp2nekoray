@@ -1,7 +1,6 @@
 import subprocess
 import json
 import re
-import os
 
 
 def run_exe_program(exe_path):
@@ -12,24 +11,50 @@ def run_exe_program(exe_path):
         return e.output
 
 
+def read_account_toml():
+    with open("wgcf-account.toml", "r") as file:
+        data_list = re.findall("\w+ = '(.+)'\n", file.read())
+        return {"license_key": data_list[2], "private_key": data_list[3]}
+
+
+def update_account_toml(license_key: str):
+    filename = "wgcf-account.toml"
+    with open(filename, "w") as file:
+        line1 = "access_token = '7a6680a2-3d39-402d-ba97-9bacd92a4934'"
+        line2 = "device_id = '4c169f91-e7fb-44f6-ab65-8ef29f9a10d9'"
+        line3 = f"license_key = '{license_key}'"
+        line4 = "private_key = 'KBoIQGCks9u41xjXV02fDamCZcYw99DId7BwvSgVYks='\n"
+        file.write("\n".join([line1, line2, line3, line4]))
+    run_exe_program("wgcf.exe update")
+    data_dict = read_account_toml()
+    print(f"update wgcf-account.toml: {data_dict['private_key']}")
+
+
 def read_profile_conf(filename):
     with open(filename, "r") as file:
         txt = file.read()
-    data_list = re.findall(".+?= (.+)\n", txt)
+    data_list = re.findall("\w+ = (.+)\n", txt)
     data_dict = {
         "local_address": data_list[1:3],
         "peer_public_key": data_list[5],
         "private_key": data_list[0],
         "type": "wireguard",
+        "mtu": int(data_list[4]),
     }
     return data_dict
 
 
+def generate_profile_conf(license_key: str):
+    filename = "wgcf-profile.conf"
+    run_exe_program("wgcf.exe generate")
+    profile_dict = read_profile_conf(filename)
+    print(f"generate wgcf-profile.conf: {profile_dict['private_key']}")
+    return profile_dict
+
+
 def read_ip_csv():
-    filename = "result.csv"
-    print("generating", filename)
     ip_port_list = []
-    with open(filename, "r") as file:
+    with open("result.csv", "r") as file:
         for i, line in enumerate(file):
             if i == 6:
                 # choose top5 ip-port
@@ -47,14 +72,11 @@ def write_output_json(index: int, key_index: int, warp_dict: dict):
     template_j["id"] = index
     template_j["bean"]["name"] = f"key-{key_index}"
     template_j["bean"]["cs"] = json.dumps(warp_dict)
-    filename = f"output/{index}.json"
-    with open(filename, "w") as file:
-        print("writing", filename)
+    with open(f"output/{index}.json", "w") as file:
         json.dump(template_j, file)
 
 
 def genrate_config(profiles: list[dict], ip_port_list: list, start_index: int):
-    os.makedirs("output", exist_ok=True)
     for i, profile_dict in enumerate(profiles):
         for j, (ip, port) in enumerate(ip_port_list):
             profile_dict["server"] = ip
@@ -64,8 +86,15 @@ def genrate_config(profiles: list[dict], ip_port_list: list, start_index: int):
 
 
 if __name__ == "__main__":
-    INPUT_DIR = "wireguard"
-    profile_dicts = [read_profile_conf(f"{INPUT_DIR}/{file}") for file in os.listdir(INPUT_DIR)]
+    run_exe_program("")
+    with open("config/license_keys.txt", "r") as file:
+        license_keys = [line.rstrip("\n") for line in file]
+    profiles = []
+    for license_key in license_keys:
+        update_account_toml(license_key)
+        profile_dict = generate_profile_conf(license_key)
+        profiles.append(profile_dict)
+
     run_exe_program("warp-yxip.bat")
     ip_port_list = read_ip_csv()
-    genrate_config(profile_dicts, ip_port_list, start_index=100)
+    genrate_config(profiles, ip_port_list, start_index=100)
