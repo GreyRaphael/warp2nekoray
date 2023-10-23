@@ -1,0 +1,57 @@
+proxy-groups:
+- name: 🚀 节点选择
+  proxies:
+  - ♻️ 自动选择
+  - ☁️ CFWarp-A
+  - DIRECT
+  type: select
+- interval: 3600
+  name: ♻️ 自动选择
+  proxies:
+  - ☁️ CFWarp-A
+  tolerance: 200
+  type: url-test
+  url: http://www.gstatic.com/generate_204
+- name: 🌍 国外媒体
+  proxies:
+  - 🚀 节点选择
+  - 🎯 全球直连
+  - ☁️ CFWarp-A
+  type: select
+- name: 📲 电报信息
+  proxies:
+  - 🚀 节点选择
+  - 🎯 全球直连
+  - ☁️ CFWarp-A
+  type: select
+- name: Ⓜ️ 微软服务
+  proxies:
+  - 🎯 全球直连
+  - 🚀 节点选择
+  type: select
+- name: 🍎 苹果服务
+  proxies:
+  - 🚀 节点选择
+  - 🎯 全球直连
+  type: select
+- name: 📢 谷歌FCM
+  proxies:
+  - 🚀 节点选择
+  - 🎯 全球直连
+  type: select
+- name: 🎯 全球直连
+  proxies:
+  - DIRECT
+  - 🚀 节点选择
+  type: select
+- name: 🍃 应用净化
+  proxies:
+  - REJECT
+  - 🚀 节点选择
+  type: select
+- name: 🐟 漏网之鱼
+  proxies:
+  - 🚀 节点选择
+  - 🎯 全球直连
+  - ☁️ CFWarp-A
+  type: select
